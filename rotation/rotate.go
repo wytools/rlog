@@ -1,4 +1,4 @@
-// Package wangyi provides a list of unit tools.
+// Package rotaion provides a list of unit tools.
 package rotation
 
 import (
@@ -62,19 +62,20 @@ type Logger struct {
 	// Rhour, Rminute and Rsecond are set when RotateType = RotateDaily. The log file will change when time is matched everyday.
 	// RMaxSize, RMaxNum are set when RotateType = RotateSize. Th log file will change when its size is over the RMaxSize.
 	// When the numbers of files reaches RMaxNum, the first log file will be overwritten.
-	rotateType      RotateType
+	rotateType RotateType
+
 	rHour           int
 	rMinute         int
 	currentFileTime time.Time
-	rMaxSize        int64
-	rSize           int64
-	rMaxNum         int
-	fnRotateIndex   int
-	fnRotate        []string
-	fnRotateUsed    []bool
+
+	rMaxSize      int64
+	rSize         int64
+	rMaxNum       int
+	fnRotateIndex int
+	fnRotate      []string
+	fnRotateUsed  []bool
 
 	file *os.File
-
 	sync.Mutex
 }
 

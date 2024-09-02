@@ -5,11 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/wytools/rlog/rotation"
+	"github.com/wytools/rlog/handler"
 )
 
 func main() {
-	slog.SetDefault(rotation.GetDefaultSizeLogger("logs/out.log", 1024, 10))
+	slog.SetDefault(handler.GetDefaultSizeLogger("logs/out.log", 1024, 10))
 
 	slog.Debug("Debug", "bug", 100000)
 
