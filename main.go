@@ -9,10 +9,7 @@ import (
 )
 
 func main() {
-	slog.SetDefault(handler.GetDefaultSizeLogger("logs/out.log", 1024, 10))
-
-	slog.Debug("Debug", "bug", 100000)
-
+	slog.SetDefault(handler.GetDefaultDailyLogger(".log", 0, 0))
 	var w sync.WaitGroup
 	w.Add(10)
 	lines := 100000
