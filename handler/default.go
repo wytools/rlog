@@ -52,21 +52,22 @@ func (h *DefaultHandler) Handle(ctx context.Context, r slog.Record) error {
 	// time
 	if !r.Time.IsZero() {
 		state.appendTime(r.Time.Round(0))
-		state.appendSep()
 	}
 	// level
+	state.buf.WriteByte('[')
 	state.appendString(r.Level.String())
-	state.appendSep()
+	state.buf.WriteByte(']')
 
 	// source
-	if h.opts.AddSource {
-		if r.Level == slog.LevelDebug {
-			state.appendAttr(slog.Any(slog.SourceKey, source(&r)))
-			state.appendSep()
-		}
+	if h.opts.AddSource && r.Level == slog.LevelDebug {
+		src := source(&r)
+		state.buf.WriteByte('[')
+		state.appendString(fmt.Sprintf("%s:%d", src.File, src.Line))
+		state.buf.WriteByte(']')
 	}
 
 	// msg
+	state.appendSep()
 	state.appendString(r.Message)
 
 	// groups
@@ -227,13 +228,6 @@ func (s *handleState) appendAttr(a slog.Attr) {
 		return
 	}
 
-	// Special case: Source.
-	if v := a.Value; v.Kind() == slog.KindAny {
-		if src, ok := v.Any().(*slog.Source); ok {
-			a.Value = slog.StringValue(fmt.Sprintf("%s:%d", src.File, src.Line))
-		}
-	}
-
 	if a.Value.Kind() == slog.KindGroup {
 		attrs := a.Value.Group()
 		// Output only non-empty groups.
@@ -283,6 +277,7 @@ func (s *handleState) appendValue(v slog.Value) {
 }
 
 func (s *handleState) appendTime(t time.Time) {
+	s.buf.WriteByte('[')
 	year, month, day := t.UTC().Date()
 	s.buf.WritePosIntWidth(year, 4)
 	s.buf.WriteByte('-')
@@ -298,7 +293,8 @@ func (s *handleState) appendTime(t time.Time) {
 	s.buf.WritePosIntWidth(sec, 2)
 	ns := t.Nanosecond()
 	s.buf.WriteByte('.')
-	s.buf.WritePosIntWidth(ns/1e3, 3)
+	s.buf.WritePosIntWidth(ns/1e6, 3)
+	s.buf.WriteByte(']')
 }
 
 func (s *handleState) appendError(err error) {
