@@ -60,7 +60,7 @@ func (h *DefaultHandler) Handle(ctx context.Context, r slog.Record) error {
 
 	// source
 	if h.opts.AddSource {
-		if r.Level == slog.LevelDebug || r.Level == slog.LevelError {
+		if r.Level == slog.LevelDebug {
 			state.appendAttr(slog.Any(slog.SourceKey, source(&r)))
 			state.appendSep()
 		}
